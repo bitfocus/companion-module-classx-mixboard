@@ -1,0 +1,31 @@
+{
+	"id": "classx-mixboard",
+	"name": "classx-mixboard",
+	"shortname": "MixBoard",
+	"description": "Module to interact with ClassX MixBoard",
+	"version": "1.0.0",
+	"license": "MIT",
+	"repository": "git+https://github.com/dar-dev/companion-module-classx-mixboard.git",
+	"bugs": "https://github.com/dar-dev/companion-module-classx-mixboard/issues",
+	"maintainers": [
+		{
+			"name": "Dar-dev",
+			"email": "dar@classx.it"
+		}
+	],
+	"runtime": {
+		"type": "node22",
+		"api": "nodejs-ipc",
+		"apiVersion": "0.0.0",
+		"entrypoint": "../main.js"
+	},
+	"legacyIds": [],
+	"manufacturer": "ClassX",
+	"products": [
+		"MixBoard"
+	],
+	"keywords": [
+		"ClassX",
+		"MixBoard"
+	]
+}
