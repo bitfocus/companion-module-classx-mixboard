@@ -98,5 +98,5 @@ Each preset is configured with the proper action, arguments, and feedback bindin
 
 This module is maintained by Dar of ClassX®.
 
-For issues or contributions, please use the [GitHub Issues](https://github.com/dar-dev/companion-module-classx-mixboard/issues) page.
+For issues or contributions, please use the [GitHub Issues](https://github.com/bitfocus/companion-module-classx-mixboard/issues) page.
 
