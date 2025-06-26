@@ -99,9 +99,16 @@ class MixBoardInstance extends InstanceBase {
 	initTCP() {
 		var ret = false;
 
+		// dispose prev socket if present
 		if (this.socket) {
 			this.socket.destroy()
 			this.socket = null
+		}
+
+		// dispose prev event socket if present
+		if (this.eventsocket) {
+			this.eventsocket.destroy()
+			this.eventsocket = null
 		}
 
 		// fallback
@@ -686,46 +693,96 @@ class MixBoardInstance extends InstanceBase {
 
 				let dataStr = data.trim();
 
-				if (dataStr.startsWith('PREVIEW_CHANGED')) {
-					let channel = this.getQueryVariable(dataStr, 'CHANNEL')
+				if (dataStr.startsWith('MIXBOARDEVENT')) {
+					let type = this.getQueryVariable(dataStr, 'TYPE')
 
-					// it must be the current channel 
-					if (channel != this.currentChannel) return
+					if (type === 'PROGRAM_CHANGED') {
+						let channel = this.getQueryVariable(dataStr, 'CHANNEL')
 
-					let videoInputId = parseInt(this.getQueryVariable(dataStr, 'VIDEOINPUTID'))
+						// it must be the current channel 
+						if (channel !== this.currentChannel) return
 
-					// update status
-					this.setVideoInputStatus(videoInputId, this.STATUS.PLAY_TO_PREVIEW)
+						let videoInputId = parseInt(this.getQueryVariable(dataStr, 'VIDEOINPUTID'))
 
-					// update status
-					for (let i = 0; i <= this.maxVideoInput; i++) {
-						if (i != videoInputId)
-							this.disableVideoInputStatus(i, this.STATUS.PLAY_TO_PREVIEW)
+						// update status
+						this.setVideoInputStatus(videoInputId, this.STATUS.PLAY_TO_PROGRAM)
+
+						// update status
+						for (let i = 0; i <= this.maxVideoInput; i++) {
+							if (i != videoInputId)
+								this.disableVideoInputStatus(i, this.STATUS.PLAY_TO_PROGRAM)
+						}
+
+						this.checkFeedbacks('program_videoinput');
+						return
 					}
+					else if (type === 'PREVIEW_CHANGED') {
+						let channel = this.getQueryVariable(dataStr, 'CHANNEL')
 
-					// check feedbacks	
-					this.checkFeedbacks('preview_videoinput');
-					return
-				}
-				else if (dataStr.startsWith('PROGRAM_CHANGED')) {
-					let channel = this.getQueryVariable(dataStr, 'CHANNEL')
+						// it must be the current channel 
+						if (channel !== this.currentChannel) return
 
-					// it must be the current channel 
-					if (channel !== this.currentChannel) return
+						let videoInputId = parseInt(this.getQueryVariable(dataStr, 'VIDEOINPUTID'))
 
-					let videoInputId = parseInt(this.getQueryVariable(dataStr, 'VIDEOINPUTID'))
+						// update status
+						this.setVideoInputStatus(videoInputId, this.STATUS.PLAY_TO_PREVIEW)
 
-					// update status
-					this.setVideoInputStatus(videoInputId, this.STATUS.PLAY_TO_PROGRAM)
+						// update status
+						for (let i = 0; i <= this.maxVideoInput; i++) {
+							if (i != videoInputId)
+								this.disableVideoInputStatus(i, this.STATUS.PLAY_TO_PREVIEW)
+						}
 
-					// update status
-					for (let i = 0; i <= this.maxVideoInput; i++) {
-						if (i != videoInputId)
-							this.disableVideoInputStatus(i, this.STATUS.PLAY_TO_PROGRAM)
+						// check feedbacks	
+						this.checkFeedbacks('preview_videoinput');
+						return
 					}
+					else if (type === 'TRANSITION_STATUS_CHANGED') {
+						let channel = this.getQueryVariable(dataStr, 'CHANNEL')
+						let status = this.getQueryVariable(dataStr, 'STATUS').toString().trim()
 
-					this.checkFeedbacks('program_videoinput');
-					return
+						// it must be the current channel 
+						if (channel !== this.currentChannel) return
+
+						if (status === 'TRANSITION_FINISHED') {
+							this.updateMixBoardInfo()
+						}
+						return
+					}
+					else if (type === 'KEYER_STATUS_CHANGED') {
+						let channel = this.getQueryVariable(dataStr, 'CHANNEL')
+						let keyerId = parseInt(this.getQueryVariable(dataStr, 'KEYERID'))
+						let status = this.getQueryVariable(dataStr, 'STATUS').toString().trim()
+
+						// it must be the current channel 
+						if (channel !== this.currentChannel) return
+
+						if (status === 'PLAY_TO_PREVIEW') {
+							this.getKeyer(keyerId).status = this.STATUS.PLAY_TO_PREVIEW
+						}
+						else if (status === 'PLAY_TO_PROGRAM') {
+							this.getKeyer(keyerId).status = this.STATUS.PLAY_TO_PROGRAM
+						}
+						else if (status === 'STOP') {
+							this.getKeyer(keyerId).status = this.STATUS.STOPPED
+						}
+
+						this.checkFeedbacks()
+						return
+					}
+					else if (type === 'KEYER_TRANSITIONLINK_CHANGED') {
+						let channel = this.getQueryVariable(dataStr, 'CHANNEL')
+						let keyerId = parseInt(this.getQueryVariable(dataStr, 'KEYERID'))
+						let link = this.getQueryVariable(dataStr, 'LINK').toLowerCase() === 'true'
+
+						// it must be the current channel 
+						if (channel !== this.currentChannel) return
+
+						this.getKeyer(keyerId).linkEnabled = link
+
+						this.checkFeedbacks('link_keyer')
+						return
+					}
 				}
 				else if (dataStr.startsWith('VIDEOINPUTEVENT')) {
 					let videoInputId = parseInt(this.getQueryVariable(dataStr, 'VIDEOINPUTID'))
@@ -737,53 +794,6 @@ class MixBoardInstance extends InstanceBase {
 						this.queryPresets()
 					}
 
-					return
-				}
-				else if (dataStr.startsWith('TRANSITION_STATUS_CHANGED')) {
-					let channel = this.getQueryVariable(dataStr, 'CHANNEL')
-					let status = this.getQueryVariable(dataStr, 'STATUS').toString().trim()
-
-					// it must be the current channel 
-					if (channel !== this.currentChannel) return
-
-					if (status === 'TRANSITION_FINISHED') {
-						this.updateMixBoardInfo()
-					}
-
-					return
-				}
-				else if (dataStr.startsWith('KEYER_STATUS_CHANGED')) {
-					let channel = this.getQueryVariable(dataStr, 'CHANNEL')
-					let keyerId = parseInt(this.getQueryVariable(dataStr, 'KEYERID'))
-					let status = this.getQueryVariable(dataStr, 'STATUS').toString().trim()
-
-					// it must be the current channel 
-					if (channel !== this.currentChannel) return
-
-					if (status === 'PLAY_TO_PREVIEW') {
-						this.getKeyer(keyerId).status = this.STATUS.PLAY_TO_PREVIEW
-					}
-					else if (status === 'PLAY_TO_PROGRAM') {
-						this.getKeyer(keyerId).status = this.STATUS.PLAY_TO_PROGRAM
-					}
-					else if (status === 'STOP') {
-						this.getKeyer(keyerId).status = this.STATUS.STOPPED
-					}
-
-					this.checkFeedbacks()
-					return
-				}
-				else if (dataStr.startsWith('KEYER_TRANSITIONLINK_CHANGED')) {
-					let channel = this.getQueryVariable(dataStr, 'CHANNEL')
-					let keyerId = parseInt(this.getQueryVariable(dataStr, 'KEYERID'))
-					let link = this.getQueryVariable(dataStr, 'LINK').toLowerCase() === 'true'
-
-					// it must be the current channel 
-					if (channel !== this.currentChannel) return
-
-					this.getKeyer(keyerId).linkEnabled = link
-
-					this.checkFeedbacks('link_keyer')
 					return
 				}
 				else if (dataStr.startsWith('SERVEREVENT')) {
@@ -1019,7 +1029,7 @@ class MixBoardInstance extends InstanceBase {
 					},
 				],
 				callback: (feedback) => {
-					 let currentTakeMode = this.takeMode[this.currentChannel] || 'CUT';
+					let currentTakeMode = this.takeMode[this.currentChannel] || 'CUT';
 					return currentTakeMode == feedback.options.take_mode
 				},
 			},
@@ -1134,7 +1144,6 @@ class MixBoardInstance extends InstanceBase {
 					},
 				],
 				callback: ({ options }) => {
-					//this.log('error', 'executing action: ' +  options.take_mode)
 					let channel = options.channel ?? this.currentChannel
 					this.takeMode[channel] = options.take_mode;
 					this.checkFeedbacks('takemode_changed')
