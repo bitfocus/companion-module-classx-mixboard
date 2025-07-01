@@ -3,7 +3,7 @@
 	"name": "classx-mixboard",
 	"shortname": "MixBoard",
 	"description": "Module to interact with ClassX MixBoard",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"license": "MIT",
 	"repository": "git+https://github.com/dar-dev/companion-module-classx-mixboard.git",
 	"bugs": "https://github.com/dar-dev/companion-module-classx-mixboard/issues",
