@@ -61,15 +61,15 @@ The module provides built-in button presets for quick configuration inside Bitfo
 
 ### Available Preset Categories
 
-- **CHANNEL**
+- **CHANNELS**
   - Presets for selecting the active MixBoard channel (`CH-0` to `CH-3`)
   - Includes feedback to indicate which channel is currently selected
 
-- **PROGRAM INPUT**
+- **PROGRAM**
   - Presets for assigning a VideoInput directly to the program bus of the current channel
   - Feedback highlights the active program VideoInput
 
-- **PREVIEW INPUT**
+- **PREVIEW**
   - Presets for assigning a VideoInput to the preview bus of the current channel
   - Feedback highlights the selected preview VideoInput
 
@@ -81,8 +81,6 @@ The module provides built-in button presets for quick configuration inside Bitfo
 - **KEYERS**
   - Presets to toggle keyers (`BKGD` to `KEY4`)
   - Feedback reflects each keyer’s current playback state (Program, Preview, or Stopped)
-
-- **KEY LINK**
   - Presets to enable/disable the transition link option for each keyer
   - Feedback shows the current link status of the keyer
 
