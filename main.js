@@ -1146,6 +1146,7 @@ class MixBoardInstance extends InstanceBase {
 							if (isControlVideoInput) {
 								this.currentCompoLayoutId = value
 								this.checkFeedbacks('update_execute_gui')
+								this.sendCommand(`UPDATEGUI`)
 							}
 							return
 
@@ -1153,6 +1154,7 @@ class MixBoardInstance extends InstanceBase {
 							if (isControlVideoInput) {
 								this.currentCompoSpeedIndex = ANIMATION_SPEED.findIndex(item => item.name === value)
 								this.checkFeedbacks('update_execute_gui')
+								this.sendCommand(`UPDATEGUI`)
 							}
 							return
 
@@ -1160,6 +1162,7 @@ class MixBoardInstance extends InstanceBase {
 							if (isControlVideoInput) {
 								this.currentCompoTransIndex = TRANSITION_MODE.findIndex(item => item.name === value)
 								this.checkFeedbacks('update_execute_gui')
+								this.sendCommand(`UPDATEGUI`)
 							}
 							return
 
@@ -1473,25 +1476,24 @@ class MixBoardInstance extends InstanceBase {
 				callback: (feedback) => {
 					let text = ""
 					let icon = ''
+					let bg = COLOR_BLACK
 					switch (this.getVideoInput(this.config.control_videoinput_id).type) {
 						case 'COMPOSITOR':
 							let id = feedback.options.assign_id
 							let selectedCrosspoint = this.currentCompoCrosspointId
 							let visible = id < this.currentCompoCrosspoints.length
+							let selected = selectedCrosspoint == id
 
 							text = visible ? this.currentCompoCrosspoints[id].name : ''
-							icon = visible ? (selectedCrosspoint == id ? CROSSPOINT_SELECTED_ICONS[id] : CROSSPOINT_ICONS[id]) : ''
+							icon = visible ? (selected ? CROSSPOINT_SELECTED_ICONS[id] : CROSSPOINT_ICONS[id]) : ''
+							bg = visible ? (selected ? COLOR_ORANGE : COLOR_BLACK) : COLOR_BLACK
 							break
-
-						default:
-							text = ''
-							icon = ''
-							break;
 					}
 
 					return {
 						text: text,
-						png64: icon
+						png64: icon,
+						bgcolor: bg
 					};
 				},
 			},
@@ -1855,23 +1857,21 @@ class MixBoardInstance extends InstanceBase {
 						case 'COMPOSITOR':
 							// layout buttons [0-7]
 							if (executeId < MAX_COMPO_LAYOUT) {
+
 								this.currentCompoLayoutId = executeId
 								this.sendCommand('MBC_SENDVIDEOINPUTCOMMAND VIDEOINPUTID=' + controlVideoInput + ' COMMAND="setActiveLayout ' + executeId + '"')
-								this.sendCommand(`UPDATEGUI`)
 							}
 							else if (executeId == COMPO_SPEED_MODE_ID) {
+
 								this.currentCompoSpeedIndex = (this.currentCompoSpeedIndex + 1) % ANIMATION_SPEED.length
 								let speed = ANIMATION_SPEED[this.currentCompoSpeedIndex].name
-
 								this.sendCommand('MBC_SENDVIDEOINPUTCOMMAND VIDEOINPUTID=' + controlVideoInput + ' COMMAND="setAnimationSpeed ' + speed + '"')
-								this.sendCommand(`UPDATEGUI`)
 							}
 							else if (executeId == COMPO_TRANSITION_MODE_ID) {
+
 								this.currentCompoTransIndex = (this.currentCompoTransIndex + 1) % TRANSITION_MODE.length
 								let transitionMode = TRANSITION_MODE[this.currentCompoTransIndex].name
-
 								this.sendCommand('MBC_SENDVIDEOINPUTCOMMAND VIDEOINPUTID=' + controlVideoInput + ' COMMAND="setTransitionMode ' + transitionMode + '"')
-								this.sendCommand(`UPDATEGUI`)
 							}
 							break
 					}
