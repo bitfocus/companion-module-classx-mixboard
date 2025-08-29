@@ -1,3 +1,12 @@
+/**
+***************************************************************************************************************************
+*                                                                                                                         *
+*                                          (C) 2025 ClassX - All Rights Reserved                                          *
+*                                                                                                                         *
+*                                           Official MixBoard® Companion module                                           *
+*                                                                                                                         *
+***************************************************************************************************************************
+*/
 const { InstanceBase, TCPHelper, Regex, runEntrypoint, InstanceStatus } = require('@companion-module/base')
 
 // Base64 compatibility
@@ -1408,7 +1417,7 @@ class MixBoardInstance extends InstanceBase {
 
 			update_execute_gui: {
 				type: 'advanced',
-				name: 'Update execute buttons state',
+				name: 'Update execute buttons',
 				description: 'Update the execute buttons state',
 				options: [
 					{
@@ -1461,7 +1470,7 @@ class MixBoardInstance extends InstanceBase {
 
 			update_assign_gui: {
 				type: 'advanced',
-				name: 'Update assign buttons state',
+				name: 'Update assign buttons',
 				description: 'Update the assign buttons state',
 				options: [
 					{
@@ -1500,7 +1509,7 @@ class MixBoardInstance extends InstanceBase {
 
 			update_resume_button: {
 				type: 'boolean',
-				name: 'Update the resume button according to transition status of the current channel',
+				name: 'Update resume button',
 				description: 'Update the resume button according to transition status of the current channel',
 				options: [
 
@@ -1512,7 +1521,7 @@ class MixBoardInstance extends InstanceBase {
 
 			highlight_videoinput_control: {
 				type: 'boolean',
-				name: 'Highlight the PGM/PVW VideoInput button when controlled',
+				name: 'Highlight VideoInput control',
 				description: 'Highlight the PGM/PVW VideoInput button when controlled',
 				options: [
 					{
@@ -1531,7 +1540,7 @@ class MixBoardInstance extends InstanceBase {
 
 			update_compo_crosspoint_gui: {
 				type: 'boolean',
-				name: 'Update the Compositor crosspoint VideoInput buttons',
+				name: 'Update crosspoint buttons',
 				description: 'Update the Compositor crosspoint VideoInput buttons',
 				options: [
 					{
@@ -1813,8 +1822,8 @@ class MixBoardInstance extends InstanceBase {
 			},
 
 			control_program_input_action: {
-				name: 'Control the program VideoInput',
-				description: 'Control the program VideoInput',
+				name: 'Control program VideoInput',
+				description: 'Enable control of the program VideoInput',
 				callback: () => {
 					let controlVideoInput = this.programVideoInputId
 					this.config.control_videoinput_id = controlVideoInput
@@ -1825,8 +1834,8 @@ class MixBoardInstance extends InstanceBase {
 			},
 
 			control_preview_input_action: {
-				name: 'Control the preview VideoInput',
-				description: 'Control the preview VideoInput',
+				name: 'Control preview VideoInput',
+				description: 'Enable control of the preview VideoInput',
 				callback: () => {
 					let controlVideoInput = this.previewVideoInputId
 					this.config.control_videoinput_id = controlVideoInput
@@ -1838,7 +1847,7 @@ class MixBoardInstance extends InstanceBase {
 
 			control_execute_action: {
 				name: 'Execute action',
-				description: 'The execute action',
+				description: 'Generic execute action for control execute buttons',
 				options: [
 					{
 						type: 'number',
@@ -1880,7 +1889,7 @@ class MixBoardInstance extends InstanceBase {
 
 			control_assign_action: {
 				name: 'Assign action',
-				description: 'Generic assign action',
+				description: 'Generic assign action for control assign buttons',
 				options: [
 					{
 						type: 'number',
