@@ -10,7 +10,7 @@
 const { InstanceBase, TCPHelper, Regex, runEntrypoint, InstanceStatus } = require('@companion-module/base')
 
 // Base64 compatibility
-const atob = (data) => Buffer.from(data, 'base64').toString('ascii')
+const atob = (data) => Buffer.from(data, 'base64').toString('utf8')
 const btoa = (data) => Buffer.from(data).toString('base64')
 const rgb = (r, g, b) => (r << 16) + (g << 8) + b
 
